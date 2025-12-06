@@ -2,86 +2,80 @@
 description: Decompose a feature into ordered subtasks with dependencies
 ---
 
-# Task Breakdown
+# Task Breakdown — Dispatcher
 
-Break down a large feature into smaller, implementable tasks.
+You are the **dispatcher** for task breakdown work. Your job is to gather context, then delegate to a specialized agent.
 
-## Process
+## Your Role
 
-### 1. Define the Feature
-Start with a clear understanding:
-- What is the end goal?
-- What are the must-haves vs nice-to-haves?
-- What existing code is involved?
+1. **Clarify the feature** — Understand what needs to be broken down
+2. **Gather context** — Collect scope, constraints, dependencies
+3. **Delegate** — Spawn the breakdown agent with full context
 
-### 2. Identify Components
-Map out what's needed:
-- New files or modules to create
-- Existing code to modify
-- Tests to write
-- Documentation to update
+## Step 1: Gather Context
 
-### 3. Create Tasks
-For each logical piece of work:
+Ask the user:
+- **What feature?** — What large piece of work needs decomposition?
+- **Size constraints?** — How granular should tasks be? (S/M/L guidelines)
+- **Dependencies?** — Any known prerequisites or blockers?
+- **Existing work?** — Is there related code or prior tasks to consider?
+- **Output format?** — Create beads issues, or just provide a list?
 
-```
-## Task: [Action-oriented title]
-Size: S/M/L
-Depends on: [Previous tasks, if any]
+If the user references a beads issue, use `bd show <id>` to get the full details.
 
-### Acceptance Criteria
-- [ ] [Specific, testable outcome]
-- [ ] [Another measurable result]
-```
-
-### 4. Order by Dependencies
-Arrange tasks so:
-- Prerequisites come first
-- Critical path is clear
-- Parallel opportunities are noted
-
-## Task Sizing Guide
-
+### Task Sizing Reference
 | Size | Typical Scope | Time |
 |------|---------------|------|
 | S | Single function, small change | < 1 hour |
 | M | New component, multiple files | 1-3 hours |
 | L | Feature slice, significant change | 3-6 hours |
 
-If a task is larger than L, break it down further.
+If a task is larger than L, it should be broken down further.
 
-## Creating in Beads
+## Step 2: Delegate to Agent
 
-If beads is available, create tasks with:
-```bash
-bd create --title="[title]" --type=task --priority=[1-4]
-bd dep add [child-id] [parent-id]  # child depends on parent
-```
-
-## Output Format
+Once you have enough context, use the **Task tool** to spawn the breakdown agent:
 
 ```
-## Feature Breakdown: [Feature Name]
+subagent_type: wip:planning:breakdown
+prompt: |
+  ## Feature to Break Down
+  [Description of the feature or large task]
 
-### Tasks (in dependency order)
+  ## Scope
+  - [What's included]
+  - [What's explicitly excluded]
 
-1. **[Task Title]** (S)
-   - [ ] [Acceptance criterion]
+  ## Size Constraints
+  - Maximum task size: [S/M/L]
+  - Target granularity: [how small should tasks be]
 
-2. **[Task Title]** (M) — depends on: 1
-   - [ ] [Acceptance criterion]
-   - [ ] [Acceptance criterion]
+  ## Known Dependencies
+  - [External dependencies]
+  - [Prerequisites that must be done first]
 
-3. **[Task Title]** (S) — depends on: 1
-   - [ ] [Acceptance criterion]
+  ## Existing Context
+  - [Related code or modules]
+  - [Prior work to build on]
 
-### Dependency Graph
-1 → 2 → 4
-  ↘ 3 ↗
-
-### Notes
-[Any important context or risks]
+  ## Output Requirements
+  - [Create beads issues: yes/no]
+  - [Include acceptance criteria: yes/no]
+  - [Show dependency graph: yes/no]
 ```
+
+## Rules
+
+- **Do NOT break down tasks yourself** — always delegate to the agent
+- **Do NOT skip context gathering** — agents create better breakdowns with clear scope
+- **Do NOT spawn the agent until** you understand the feature and sizing requirements
+
+## After the Agent Returns
+
+Summarize the breakdown for the user and suggest next steps:
+- `/wip:workflow:implement` — Start implementing the first task
+- Create beads issues: `bd create --title="[title]" --type=task`
+- Add dependencies: `bd dep add [child-id] [parent-id]`
 
 ---
 

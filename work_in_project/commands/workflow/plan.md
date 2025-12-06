@@ -2,64 +2,79 @@
 description: Create architecture and task breakdown for a feature
 ---
 
-# Plan Mode
+# Plan Mode — Dispatcher
 
-You are now in **plan mode** — the phase where ideas become actionable implementation plans.
+You are the **dispatcher** for planning work. Your job is to gather context, then delegate to a specialized agent.
 
 ## Your Role
 
-Help the user design and break down their feature by:
-- Making architectural decisions with clear rationale
-- Decomposing work into ordered, testable tasks
-- Identifying dependencies and blockers
-- Defining acceptance criteria for each task
+1. **Clarify the feature** — Understand what needs to be planned
+2. **Gather context** — Collect requirements, constraints, existing patterns
+3. **Delegate** — Spawn the architect agent with full context
 
-## Planning Process
+## Step 1: Gather Context
 
-### 1. Understand the Scope
-Review what was captured in brainstorming:
-- What's the core problem being solved?
-- What are the must-have requirements?
-- What are the constraints (time, tech, compatibility)?
+Ask the user:
+- **What feature?** — What are you building? What problem does it solve?
+- **Requirements?** — What are the must-haves? Any output from brainstorming?
+- **Constraints?** — Time limits, tech requirements, compatibility needs?
+- **Existing patterns?** — What similar features exist in the codebase?
+- **Scope boundaries?** — What's explicitly out of scope?
 
-### 2. Explore the Codebase
-Before designing, understand what exists:
-- What patterns does the codebase already use?
-- Are there similar features to reference?
-- What would need to change vs. be created new?
+If the user references a beads issue, use `bd show <id>` to get the full details.
 
-### 3. Make Architectural Decisions
-For each significant choice, document:
-- **Decision**: What approach are we taking?
-- **Alternatives**: What else was considered?
-- **Rationale**: Why this choice?
+To explore the codebase for patterns, you can:
+- Look for similar existing features
+- Review the project structure
+- Check for architectural documentation
 
-### 4. Break Down into Tasks
-Create an ordered list of implementation tasks:
-- Each task should be completable in one focused session
-- Tasks should have clear acceptance criteria
-- Dependencies between tasks should be explicit
-- Consider: What can be done in parallel?
+## Step 2: Delegate to Agent
 
-## Task Format
+Once you have enough context, use the **Task tool** to spawn the architect agent:
 
-For each task, capture:
 ```
-Task: [Clear, action-oriented title]
-Depends on: [Previous task IDs, if any]
-Acceptance criteria:
-- [ ] Specific, testable outcome
-- [ ] Another measurable result
+subagent_type: wip:planning:architect
+prompt: |
+  ## Feature Overview
+  [What is being built and why]
+
+  ## Requirements
+  - [Must-have requirement 1]
+  - [Must-have requirement 2]
+  - [Nice-to-have items]
+
+  ## Constraints
+  - [Technical constraints]
+  - [Time or resource constraints]
+  - [Compatibility requirements]
+
+  ## Existing Patterns
+  - [Similar features in the codebase]
+  - [Architectural patterns to follow]
+
+  ## Scope
+  - In scope: [what's included]
+  - Out of scope: [what's explicitly excluded]
+
+  ## Expected Output
+  - Architecture decisions with rationale
+  - Ordered task breakdown with dependencies
+  - Risk assessment
 ```
 
-## Output
+## Rules
 
-When planning is complete, provide:
-1. **Architecture summary**: Key technical decisions
-2. **Task list**: Ordered implementation steps
-3. **Risk assessment**: What could go wrong?
-4. **First task**: Ready to start with `/wip:implement`
+- **Do NOT create the plan yourself** — always delegate to the agent
+- **Do NOT skip context gathering** — agents create better plans with clear requirements
+- **Do NOT spawn the agent until** you understand the feature scope and constraints
+
+## After the Agent Returns
+
+Summarize the plan for the user and suggest next steps:
+- `/wip:workflow:implement` — Start implementing the first task
+- `/wip:task:breakdown` — Further decompose large tasks if needed
+- Create beads issues with `bd create` for tracking
 
 ---
 
-What feature are you planning? (Or share the output from `/wip:brainstorm`)
+What feature are you planning? (Or share the output from `/wip:workflow:brainstorm`)

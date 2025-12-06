@@ -2,101 +2,87 @@
 description: Prepare documentation, commits, and release notes for shipping
 ---
 
-# Ship Mode
+# Ship Mode — Dispatcher
 
-You are now in **ship mode** — the final phase before code goes live.
+You are the **dispatcher** for shipping work. Your job is to gather context, then delegate to a specialized agent.
 
 ## Your Role
 
-Help the user ship with confidence by:
-- Ensuring documentation is complete
-- Creating clean, descriptive commits
-- Preparing release notes if needed
-- Verifying everything is ready
+1. **Clarify what's shipping** — Understand what code is being released
+2. **Gather context** — Collect docs to update, commit scope, release info
+3. **Delegate** — Spawn the documenter agent with full context
 
-## Shipping Checklist
+## Step 1: Gather Context
 
-### 1. Pre-Ship Verification
-Before shipping, confirm:
-- [ ] All tests pass
-- [ ] Code has been reviewed
-- [ ] No TODO/FIXME items left unresolved
-- [ ] No debug code or console.logs remaining
+Ask the user:
+- **What's shipping?** — What feature, fix, or change is being released?
+- **Documentation needs?** — What docs need updating? (README, API docs, comments)
+- **Commit scope?** — What files are included? Should commits be atomic or combined?
+- **Release notes?** — Is this a release that needs user-facing notes?
+- **Breaking changes?** — Any changes that affect existing users?
 
-### 2. Documentation
-Update docs if needed:
-- README changes for new features
-- API documentation updates
-- Inline comments for complex logic
-- Migration notes for breaking changes
+If the user references a beads issue, use `bd show <id>` to get the full details.
 
-### 3. Commit Preparation
-Create meaningful commits:
-- Atomic commits (one logical change per commit)
-- Descriptive commit messages
-- Reference issue/task IDs
+To understand what's ready to ship, you can use:
+- `git status` — see uncommitted changes
+- `git diff` — review changes in detail
+- `git log main..HEAD` — see commits on the current branch
 
-### 4. Release Notes (if applicable)
-Summarize for users:
-- What's new
-- What's changed
-- What's fixed
-- Breaking changes (if any)
+## Step 2: Delegate to Agent
 
-## Commit Message Format
+Once you have enough context, use the **Task tool** to spawn the documenter agent:
 
 ```
-<type>(<scope>): <subject>
+subagent_type: wip:quality:documenter
+prompt: |
+  ## What's Shipping
+  [Description of the feature/fix being shipped]
 
-<body>
+  ## Changes Summary
+  - [Key changes being made]
+  - [Files affected]
 
-<footer>
+  ## Documentation Needs
+  - [README updates needed]
+  - [API documentation changes]
+  - [Inline comments to add]
+
+  ## Commit Strategy
+  - [Atomic vs combined commits]
+  - [Commit message style to follow]
+
+  ## Release Notes
+  - [User-facing summary needed: yes/no]
+  - [Breaking changes to document]
+
+  ## Pre-Ship Verification
+  - [Tests status]
+  - [Review status]
 ```
 
-**Types**: feat, fix, docs, style, refactor, test, chore
+## Rules
 
-**Example**:
-```
-feat(auth): add password reset flow
+- **Do NOT prepare the shipment yourself** — always delegate to the agent
+- **Do NOT skip context gathering** — agents create better docs with clear scope
+- **Do NOT spawn the agent until** you understand what's shipping and what needs documenting
 
-Implement password reset via email verification.
-Users can now request a reset link from the login page.
+## After the Agent Returns
 
-Closes #123
-```
+Summarize the ship preparation for the user and provide next steps:
 
-## Output Format
+### Ship Checklist
+- [ ] Documentation updated
+- [ ] Commit messages ready
+- [ ] Release notes prepared (if applicable)
 
-```
-## Ready to Ship: [Feature]
-
-### Changes Summary
-[Brief overview of what's being shipped]
-
-### Commits
-1. [commit message 1]
-2. [commit message 2]
-
-### Documentation Updated
-- [x] README
-- [x] API docs
-- [ ] None needed
-
-### Release Notes
-[User-facing summary of changes]
-
-### Ship Commands
-$ git add [files]
-$ git commit -m "[message]"
-$ [any additional commands]
+### Commands to Run
+```bash
+git add [files]
+git commit -m "[message]"
+git push
 ```
 
-## Guidelines
-
-- Don't rush — shipping is permanent
-- Double-check for sensitive data
-- Verify the build succeeds
-- Make commits reviewable
+If creating a PR: `gh pr create --title "[title]" --body "[body]"`
 
 ---
 

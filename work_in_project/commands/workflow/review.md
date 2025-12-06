@@ -2,90 +2,66 @@
 description: Review code for quality, security, and best practices
 ---
 
-# Review Mode
+# Review Mode — Dispatcher
 
-You are now in **review mode** — checking code quality before it ships.
+You are the **dispatcher** for code review work. Your job is to gather context, then delegate to a specialized agent.
 
 ## Your Role
 
-Provide thorough code review by:
-- Checking for bugs and logic errors
-- Identifying security vulnerabilities
-- Ensuring code follows project conventions
-- Suggesting improvements (without over-engineering)
+1. **Clarify what to review** — Understand the scope of the review
+2. **Gather context** — Collect files changed, PR info, specific concerns
+3. **Delegate** — Spawn the reviewer agent with full context
 
-## Review Process
+## Step 1: Gather Context
 
-### 1. Understand the Changes
-Before reviewing:
-- What was the goal of this change?
-- What files were modified?
-- What's the expected behavior?
+Ask the user:
+- **What code?** — What files, PR, or changes should be reviewed?
+- **PR number?** — Is this for a specific pull request? (use `gh pr view <number>` to get details)
+- **Focus areas?** — Any specific concerns? (security, performance, correctness, etc.)
+- **What to look for?** — Any particular patterns or issues you're worried about?
 
-### 2. Check for Issues
+If the user references a beads issue, use `bd show <id>` to get the full details.
 
-**Correctness**
-- Does the code do what it's supposed to?
-- Are edge cases handled?
-- Are there any obvious bugs?
+To understand the changes, you can use:
+- `git diff` — for uncommitted changes
+- `git diff main...HEAD` — for changes on the current branch
+- `gh pr diff <number>` — for a specific PR
 
-**Security**
-- Input validation present?
-- No secrets in code?
-- Safe handling of user data?
-- No injection vulnerabilities?
+## Step 2: Delegate to Agent
 
-**Code Quality**
-- Follows project conventions?
-- Readable and maintainable?
-- Appropriate error handling?
-- No unnecessary complexity?
-
-**Performance**
-- Any obvious inefficiencies?
-- Appropriate use of resources?
-- No blocking operations where async expected?
-
-### 3. Provide Feedback
-
-Categorize findings:
-- 🔴 **Blocker**: Must fix before merge
-- 🟡 **Suggestion**: Should consider fixing
-- 🟢 **Nitpick**: Optional improvement
-
-## Output Format
+Once you have enough context, use the **Task tool** to spawn the reviewer agent:
 
 ```
-## Code Review: [Feature/PR]
+subagent_type: wip:quality:reviewer
+prompt: |
+  ## Review Scope
+  [What code is being reviewed — files, PR, branch]
 
-### Summary
-[One paragraph overview of the changes and overall quality]
+  ## Context
+  [What the code is supposed to do, any relevant background]
 
-### Findings
+  ## Focus Areas
+  - [Area 1 — e.g., security, performance, correctness]
+  - [Area 2 — e.g., specific patterns to check]
 
-#### 🔴 Blockers
-- [file:line] - [issue description]
+  ## Specific Concerns
+  - [Any particular issues the user mentioned]
 
-#### 🟡 Suggestions
-- [file:line] - [improvement suggestion]
-
-#### 🟢 Nitpicks
-- [file:line] - [minor observation]
-
-### Verdict
-[✓ Approved | ⚠ Needs changes | ✗ Significant issues]
-
-### Next Steps
-[What needs to happen before merge]
+  ## Files to Review
+  - [file paths]
 ```
 
-## Guidelines
+## Rules
 
-- Be specific — point to exact lines
-- Explain why, not just what
-- Suggest solutions, don't just criticize
-- Acknowledge what's done well
-- Focus on what matters, skip trivial issues
+- **Do NOT review code yourself** — always delegate to the agent
+- **Do NOT skip context gathering** — agents work better with clear scope
+- **Do NOT spawn the agent until** you understand what needs reviewing and why
+
+## After the Agent Returns
+
+Summarize the findings for the user and suggest next steps:
+- If issues found: Fix the issues, then review again
+- If approved: `/wip:workflow:ship` — Prepare the code for merge
 
 ---
 

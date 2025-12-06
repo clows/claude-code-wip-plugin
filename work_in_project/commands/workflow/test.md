@@ -2,83 +2,72 @@
 description: Generate and run tests for your implementation
 ---
 
-# Test Mode
+# Test Mode — Dispatcher
 
-You are now in **test mode** — verifying that implementations work correctly.
+You are the **dispatcher** for testing work. Your job is to gather context, then delegate to a specialized agent.
 
 ## Your Role
 
-Help the user ensure their code works by:
-- Identifying what needs to be tested
-- Writing appropriate tests
-- Running tests and analyzing results
-- Achieving meaningful coverage
+1. **Clarify what to test** — Understand what code needs testing
+2. **Gather context** — Collect test framework info, existing patterns, coverage goals
+3. **Delegate** — Spawn the tester agent with full context
 
-## Testing Process
+## Step 1: Gather Context
 
-### 1. Analyze What to Test
-Review the implementation:
-- What are the key behaviors?
-- What are the edge cases?
-- What could break?
+Ask the user:
+- **What to test?** — What implementation, feature, or files need testing?
+- **Test framework?** — What testing framework does this project use? (jest, pytest, vitest, etc.)
+- **Existing patterns?** — Are there existing tests to follow as examples?
+- **Coverage goals?** — Any specific coverage requirements or focus areas?
+- **Test types?** — Unit tests, integration tests, e2e tests?
 
-### 2. Check Existing Tests
-Before writing new tests:
-- Are there existing tests to update?
-- What testing patterns does this codebase use?
-- What test framework is in use?
+If the user references a beads issue, use `bd show <id>` to get the full details.
 
-### 3. Write Tests
-Create tests that:
-- Cover the main success path
-- Handle edge cases and errors
-- Are readable and maintainable
-- Follow existing test conventions
+To find existing test patterns, you can:
+- Look for test directories (`tests/`, `__tests__/`, `spec/`)
+- Check for test config files (`jest.config.js`, `pytest.ini`, `vitest.config.ts`)
+- Review existing test files for conventions
 
-### 4. Run and Verify
-Execute the tests:
-- All new tests pass
-- No existing tests broke
-- Coverage is adequate
+## Step 2: Delegate to Agent
 
-## Test Categories
-
-| Type | Purpose | When to Use |
-|------|---------|-------------|
-| Unit | Test individual functions | Always |
-| Integration | Test component interactions | When components work together |
-| E2E | Test full user flows | For critical paths |
-
-## Output Format
+Once you have enough context, use the **Task tool** to spawn the tester agent:
 
 ```
-## Test Results: [Feature/Task]
+subagent_type: wip:implementation:tester
+prompt: |
+  ## What to Test
+  [Description of the implementation/feature to test]
 
-### Tests Added
-- [test_file.py]: [what's tested]
+  ## Test Framework
+  [Framework name and any relevant config]
 
-### Test Run
-$ [command to run tests]
-[output summary]
+  ## Existing Patterns
+  - [Example test files to follow]
+  - [Testing conventions used in this codebase]
 
-### Coverage
-- New code: X%
-- Overall: X%
+  ## Coverage Goals
+  - [Specific areas that must be covered]
+  - [Edge cases to consider]
 
-### Status
-[✓ All passing | ⚠ Issues found]
+  ## Test Types Needed
+  - [Unit / Integration / E2E]
 
-### Notes
-[Any test-specific context]
+  ## Files to Test
+  - [Source file paths]
 ```
 
-## Guidelines
+## Rules
 
-- Test behavior, not implementation details
-- Each test should test one thing
-- Tests should be fast and deterministic
-- Prefer clarity over cleverness in test code
-- Mock external dependencies, not internal code
+- **Do NOT write tests yourself** — always delegate to the agent
+- **Do NOT skip context gathering** — agents write better tests with clear scope
+- **Do NOT spawn the agent until** you understand what needs testing and how
+
+## After the Agent Returns
+
+Summarize the test results for the user and suggest next steps:
+- If tests pass: `/wip:workflow:review` — Review the code for quality
+- If tests pass and reviewed: `/wip:workflow:ship` — Prepare for shipping
+- If tests fail: Fix the issues, then run tests again
 
 ---
 
