@@ -1,0 +1,13 @@
+# Old directories (kept for reference, not part of plugin)
+work_in_project/
+wip-marketplace/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp

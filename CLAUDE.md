@@ -15,53 +15,39 @@ See [PRD.md](PRD.md) for product requirements and component specifications.
 ## Project Structure
 
 ```
-wip/                                      # Repository root
+claude-code-wip-plugin/                   # Repository root
 ├── .beads/                               # Issue tracking database
-├── .claude/                              # Claude Code settings
-├── .github/                              # GitHub config (Copilot instructions)
+├── .claude-plugin/plugin.json            # Plugin manifest (required)
 ├── CLAUDE.md                             # This file
 ├── AGENTS.md                             # AI agent workflow guide
 ├── PRD.md                                # Product requirements
-├── wip-marketplace/                      # Local marketplace for testing
-│   └── .claude-plugin/marketplace.json
-└── work_in_project/                      # The plugin itself
-    ├── .claude-plugin/plugin.json        # Plugin manifest (required)
-    ├── commands/                         # User-invoked slash commands
-    │   ├── workflow/                     # Workflow phase commands
-    │   └── task/                         # Task management commands
-    ├── agents/                           # Specialized subagents
-    │   ├── planning/                     # Architecture, task breakdown
-    │   ├── implementation/               # Coding, testing
-    │   └── quality/                      # Review, documentation
-    ├── skills/                           # Model-invoked contextual information
-    │   └── */SKILL.md                    # Each skill in its own directory
-    ├── lib/                              # Python utilities
-    └── scripts/hooks/                    # Python hook scripts
+├── README.md                             # User-facing documentation
+├── commands/                             # User-invoked slash commands
+│   ├── workflow/                         # Workflow phase commands
+│   └── task/                             # Task management commands
+├── agents/                               # Specialized subagents
+│   ├── planning/                         # Architecture, task breakdown
+│   ├── implementation/                   # Coding, testing
+│   └── quality/                          # Review, documentation
+├── skills/                               # Model-invoked contextual information
+│   └── */SKILL.md                        # Each skill in its own directory
+├── lib/                                  # Python utilities
+└── scripts/hooks/                        # Python hook scripts
 ```
 
 ## Development Commands
 
 ### Testing Python code
 ```bash
-python -m pytest work_in_project/lib/
+python -m pytest lib/
 ```
 
-### Testing the plugin locally
+### Installing the plugin
 
-Symlink the plugin commands to `.claude/commands/` for immediate testing:
-
+Via marketplace:
 ```bash
-# From the repository root:
-ln -s $(pwd)/work_in_project/commands .claude/commands
-```
-
-Changes to `work_in_project/commands/` are instantly available without reloading.
-
-**Alternative: Marketplace installation** (when `/plugin` command is available):
-
-```bash
-/plugin marketplace add ./wip-marketplace
-/plugin install wip@wip-dev
+/plugin marketplace add github:clows/wip-marketplace
+/plugin install wip
 ```
 
 ### Managing agents
@@ -71,7 +57,7 @@ Changes to `work_in_project/commands/` are instantly available without reloading
 
 ## Plugin Manifest
 
-`work_in_project/.claude-plugin/plugin.json` requires these fields:
+`.claude-plugin/plugin.json` requires these fields:
 
 ```json
 {
@@ -131,5 +117,5 @@ Skills are **model-invoked** — Claude autonomously decides when to use them ba
 ## Python Guidelines
 
 - Use type hints
-- Tests go in `work_in_project/lib/tests/`
-- The `work_in_project/lib/tracker.py` module wraps optional beads integration
+- Tests go in `lib/tests/`
+- The `lib/tracker.py` module wraps beads integration
