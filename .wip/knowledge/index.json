@@ -1,4 +1,39 @@
 {
   "version": 1,
-  "entries": []
+  "entries": [
+    {
+      "path": "topics/tracker-library__lib_beads_tracker.md",
+      "title": "Tracker Library",
+      "summary": "Python wrapper for beads (bd) issue tracking commands",
+      "tags": [
+        "lib",
+        "beads",
+        "tracker"
+      ],
+      "lines": 62
+    },
+    {
+      "path": "topics/plugin-components__plugin_commands_agents_skills.md",
+      "title": "Plugin Components",
+      "summary": "Format reference for commands, agents, and skills in Claude Code plugins",
+      "tags": [
+        "plugin",
+        "commands",
+        "agents",
+        "skills"
+      ],
+      "lines": 89
+    },
+    {
+      "path": "topics/knowledge-library__lib_knowledge_api.md",
+      "title": "Knowledge Library",
+      "summary": "API for managing the project knowledge base in .wip/knowledge/",
+      "tags": [
+        "lib",
+        "knowledge",
+        "api"
+      ],
+      "lines": 84
+    }
+  ]
 }

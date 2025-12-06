@@ -25,18 +25,14 @@ The knowledge base uses a two-phase query to minimize context usage:
 Query the index to find relevant entries:
 
 ```bash
-# Search by keyword in filenames and summaries
-grep -i 'keyword' .wip/knowledge/index.json
+# Search by keywords
+python3 lib/knowledge.py search "auth api" --format text
 
-# Or use the Python module
-python3 -c "
-import sys; sys.path.insert(0, 'lib')
-from knowledge import search
-success, entries = search('your keywords here')
-if success:
-    for e in entries:
-        print(f'{e.path}: {e.summary}')
-"
+# Search with tag filter
+python3 lib/knowledge.py search "endpoint" --tags api,rest --format text
+
+# Get JSON output for programmatic use
+python3 lib/knowledge.py search "config"
 ```
 
 ### Phase 2: Load Selected Files
@@ -44,14 +40,11 @@ if success:
 Once you identify relevant entries, load only what you need:
 
 ```bash
-# Read specific knowledge file
-cat .wip/knowledge/topics/api__auth.md
-```
+# Load specific knowledge file(s)
+python3 lib/knowledge.py load topics/api__auth.md --format text
 
-Or programmatically:
-```python
-from lib.knowledge import load
-success, contents = load(['topics/api__auth.md'])
+# Load multiple files
+python3 lib/knowledge.py load topics/api__auth.md topics/config__settings.md
 ```
 
 ## Knowledge File Format
@@ -76,10 +69,11 @@ Important gotchas and related info
 
 | Goal | Command |
 |------|---------|
-| List all entries | `cat .wip/knowledge/index.json \| python3 -m json.tool` |
-| Search for topic | `grep -i 'topic' .wip/knowledge/index.json` |
-| Read specific file | `cat .wip/knowledge/topics/filename.md` |
-| Get KB stats | `python3 -c "from lib.knowledge import get_stats; print(get_stats())"` |
+| Search for topic | `python3 lib/knowledge.py search "topic" -f text` |
+| Load specific file | `python3 lib/knowledge.py load topics/file.md -f text` |
+| Get KB stats | `python3 lib/knowledge.py stats -f text` |
+| List all entries | `python3 lib/knowledge.py search "" -f text` |
+| Rebuild index | `python3 lib/knowledge.py rebuild` |
 
 ## Filename Convention
 
@@ -94,7 +88,20 @@ If you discover outdated or missing knowledge during implementation:
 
 1. **Note the gap** — What's missing or wrong?
 2. **Suggest update** — Mention to user that knowledge should be updated
-3. **Create/update entry** — Use `lib.knowledge.add_entry()` or `update_entry()`
+3. **Create/update entry**:
+
+```bash
+# Add new entry
+python3 lib/knowledge.py add \
+  --title "Feature Name" \
+  --summary "What it does" \
+  --content "## Interface\n..." \
+  --tags feature,api
+
+# Update existing entry
+python3 lib/knowledge.py update topics/file.md \
+  --content "# Updated Title\n> Updated summary\n\n## Interface\n..."
+```
 
 ## Tips
 

@@ -63,24 +63,21 @@ For each significant module/interface, create an entry:
 
 ## Creating Entries
 
-Use the knowledge library:
+Initialize the KB structure first, then add entries:
 
-```python
-import sys
-sys.path.insert(0, 'lib')
-from knowledge import add_entry, rebuild_index
+```bash
+# Initialize KB structure (creates .wip/knowledge/ directory)
+python3 lib/knowledge.py init
 
 # Add an entry
-add_entry(
-    title="Module Name",
-    summary="What it does",
-    content="## Interface\n...\n\n## Usage\n...",
-    tags=["module", "api"]
-)
+python3 lib/knowledge.py add \
+  --title "Module Name" \
+  --summary "What it does" \
+  --content "## Interface\n- \`func()\` — description\n\n## Usage\n..." \
+  --tags module,api
 
-# Or write files directly to .wip/knowledge/topics/
-# Then rebuild index
-rebuild_index()
+# Rebuild index after manual file creation
+python3 lib/knowledge.py rebuild
 ```
 
 ## Filename Convention

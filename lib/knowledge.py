@@ -7,6 +7,7 @@ project knowledge base stored in .wip/knowledge/.
 
 import json
 import re
+import sys
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Optional
@@ -561,3 +562,171 @@ def get_stats(project_root: Optional[Path] = None) -> tuple[bool, dict]:
         "tags": sorted(all_tags),
         "largest_files": largest_files
     }
+
+
+# =============================================================================
+# CLI Interface
+# =============================================================================
+
+
+def _output(data: dict, fmt: str = "json") -> None:
+    """Output data in specified format."""
+    if fmt == "json":
+        print(json.dumps(data, indent=2))
+    else:
+        # Text format - human readable
+        if "error" in data:
+            print(f"Error: {data['error']}", file=sys.stderr)
+        elif "entries" in data:
+            for e in data["entries"]:
+                print(f"{e['path']}: {e['summary']}")
+        elif "contents" in data:
+            for path, content in data["contents"].items():
+                print(f"--- {path} ---")
+                print(content)
+                print()
+        elif "message" in data:
+            print(data["message"])
+        elif "total_entries" in data:
+            print(f"Entries: {data['total_entries']}")
+            print(f"Total lines: {data['total_lines']}")
+            print(f"Tags: {', '.join(data['tags'])}")
+            if data.get("largest_files"):
+                print("Largest files:")
+                for path, lines in data["largest_files"]:
+                    print(f"  {path}: {lines} lines")
+        else:
+            print(json.dumps(data, indent=2))
+
+
+def main() -> int:
+    """CLI entry point for knowledge base management."""
+    import argparse
+
+    # Common arguments for all subcommands
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument(
+        "--project-root",
+        type=Path,
+        default=None,
+        help="Project root directory (default: cwd)"
+    )
+    common.add_argument(
+        "--format", "-f",
+        choices=["json", "text"],
+        default="json",
+        dest="fmt",
+        help="Output format (default: json)"
+    )
+
+    parser = argparse.ArgumentParser(
+        prog="knowledge",
+        description="Knowledge base management CLI"
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # search command
+    search_p = subparsers.add_parser("search", help="Search KB entries", parents=[common])
+    search_p.add_argument("query", help="Search keywords")
+    search_p.add_argument("--tags", "-t", help="Comma-separated tag filters")
+    search_p.add_argument("--limit", "-l", type=int, default=10, help="Max results")
+
+    # load command
+    load_p = subparsers.add_parser("load", help="Load file contents", parents=[common])
+    load_p.add_argument("paths", nargs="+", help="Paths to load")
+
+    # add command
+    add_p = subparsers.add_parser("add", help="Add new entry", parents=[common])
+    add_p.add_argument("--title", required=True, help="Entry title")
+    add_p.add_argument("--summary", required=True, help="One-line summary")
+    add_p.add_argument("--content", required=True, help="Markdown content")
+    add_p.add_argument("--tags", "-t", default="", help="Comma-separated tags")
+
+    # update command
+    update_p = subparsers.add_parser("update", help="Update existing entry", parents=[common])
+    update_p.add_argument("path", help="Path to entry")
+    update_p.add_argument("--content", required=True, help="New content")
+
+    # delete command
+    delete_p = subparsers.add_parser("delete", help="Delete entry", parents=[common])
+    delete_p.add_argument("path", help="Path to entry")
+
+    # stats command
+    subparsers.add_parser("stats", help="Show KB statistics", parents=[common])
+
+    # init command
+    subparsers.add_parser("init", help="Initialize KB structure", parents=[common])
+
+    # rebuild command
+    subparsers.add_parser("rebuild", help="Rebuild index", parents=[common])
+
+    args = parser.parse_args()
+    root = args.project_root
+
+    # Dispatch commands
+    if args.command == "search":
+        tags = args.tags.split(",") if args.tags else None
+        success, entries = search(args.query, tags=tags, limit=args.limit, project_root=root)
+        data = {"success": success, "entries": [asdict(e) for e in entries]}
+        _output(data, args.fmt)
+        return 0 if success else 1
+
+    elif args.command == "load":
+        success, contents = load(args.paths, project_root=root)
+        if success:
+            _output({"success": True, "contents": contents}, args.fmt)
+            return 0
+        else:
+            _output({"success": False, "error": str(contents)}, args.fmt)
+            return 1
+
+    elif args.command == "add":
+        tags = [t.strip() for t in args.tags.split(",") if t.strip()]
+        success, result = add_entry(
+            title=args.title,
+            summary=args.summary,
+            content=args.content,
+            tags=tags,
+            project_root=root
+        )
+        if success:
+            _output({"success": True, "path": result}, args.fmt)
+            return 0
+        else:
+            _output({"success": False, "error": result}, args.fmt)
+            return 1
+
+    elif args.command == "update":
+        success, msg = update_entry(args.path, args.content, project_root=root)
+        _output({"success": success, "message": msg}, args.fmt)
+        return 0 if success else 1
+
+    elif args.command == "delete":
+        success, msg = delete_entry(args.path, project_root=root)
+        _output({"success": success, "message": msg}, args.fmt)
+        return 0 if success else 1
+
+    elif args.command == "stats":
+        success, stats = get_stats(project_root=root)
+        if success:
+            _output({"success": True, **stats}, args.fmt)
+            return 0
+        else:
+            _output({"success": False, "error": "Failed to get stats"}, args.fmt)
+            return 1
+
+    elif args.command == "init":
+        success, msg = initialize(project_root=root)
+        _output({"success": success, "message": msg}, args.fmt)
+        return 0 if success else 1
+
+    elif args.command == "rebuild":
+        success, msg = rebuild_index(project_root=root)
+        _output({"success": success, "message": msg}, args.fmt)
+        return 0 if success else 1
+
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
