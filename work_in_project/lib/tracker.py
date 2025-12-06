@@ -34,7 +34,7 @@ def _run_bd(*args: str) -> tuple[bool, str]:
 
     try:
         result = subprocess.run(
-            ["bd", *args],
+            ["bd", "--no-daemon", *args],
             capture_output=True,
             text=True,
             timeout=30
