@@ -1,7 +1,3 @@
-# Old directories (kept for reference, not part of plugin)
-work_in_project/
-wip-marketplace/
-
 # Python
 __pycache__/
 *.pyc
