@@ -3,6 +3,7 @@ name: architect
 description: System design and technical decisions. Use when planning architecture, designing APIs, or making significant technical choices.
 tools: Read, Grep, Glob
 model: inherit
+skills: codebase-patterns, knowledge
 ---
 
 # Architect Agent

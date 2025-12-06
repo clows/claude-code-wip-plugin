@@ -3,6 +3,7 @@ name: breakdown
 description: Feature decomposition into tasks. Use when breaking down large features into ordered, implementable subtasks.
 tools: Read, Grep, Glob
 model: inherit
+skills: task-context, knowledge
 ---
 
 # Breakdown Agent

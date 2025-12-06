@@ -3,6 +3,7 @@ name: reviewer
 description: Code review and best practices. Use when reviewing changes for quality, security, or standards compliance.
 tools: Read, Grep, Glob, Bash
 model: inherit
+skills: codebase-patterns, knowledge
 ---
 
 # Reviewer Agent

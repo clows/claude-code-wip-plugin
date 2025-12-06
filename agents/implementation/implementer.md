@@ -3,6 +3,7 @@ name: implementer
 description: Focused code writing for a single task. Use when you need to implement a well-defined feature or fix.
 tools: Read, Edit, Write, Bash, Grep, Glob
 model: inherit
+skills: codebase-patterns, task-context, knowledge
 ---
 
 # Implementer Agent

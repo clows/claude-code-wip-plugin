@@ -27,6 +27,7 @@ name: agent-name
 description: When to use this agent (shown in Task tool)
 tools: Read, Edit, Bash, Grep, Glob
 model: inherit
+skills: skill-one, skill-two
 ---
 
 System prompt defining agent behavior.
@@ -38,6 +39,7 @@ System prompt defining agent behavior.
 | description | Yes | Purpose + trigger conditions |
 | tools | No | Comma-separated; inherits all if omitted |
 | model | No | sonnet, opus, haiku, inherit |
+| skills | No | Skills to auto-load for this agent |
 
 **Location**: `agents/category/name.md`
 
@@ -86,4 +88,5 @@ sys.exit(0)
 - Commands show in `/help`, skills don't
 - Agent descriptions appear in Task tool selection
 - Skill descriptions must include trigger keywords
+- Skills auto-invoke based on context; use agent `skills` field for guaranteed loading
 - Hooks must exit 0 for success

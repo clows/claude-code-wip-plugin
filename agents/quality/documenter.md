@@ -3,6 +3,7 @@ name: documenter
 description: Documentation and technical writing. Use when updating README, API docs, or adding code documentation.
 tools: Read, Edit, Write, Grep, Glob
 model: inherit
+skills: codebase-patterns, knowledge
 ---
 
 # Documenter Agent

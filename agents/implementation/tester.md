@@ -3,6 +3,7 @@ name: tester
 description: Test strategy and test generation. Use when writing tests, checking coverage, or analyzing test results.
 tools: Read, Edit, Write, Bash, Grep, Glob
 model: inherit
+skills: codebase-patterns, knowledge
 ---
 
 # Tester Agent
