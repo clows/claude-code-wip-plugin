@@ -4,7 +4,7 @@
   "plugins": [
     {
       "name": "wip",
-      "source": "../work_in_project",
+      "source": "./wip",
       "description": "Work In Project plugin"
     }
   ]

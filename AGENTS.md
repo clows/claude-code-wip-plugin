@@ -74,25 +74,9 @@ bd automatically syncs with git:
 If using GitHub Copilot, also create `.github/copilot-instructions.md` for automatic instruction loading.
 Run `bd onboard` to get the content, or see step 2 of the onboard instructions.
 
-### MCP Server (Recommended)
+### CLI Usage (Important)
 
-If using Claude or MCP-compatible clients, install the beads MCP server:
-
-```bash
-pip install beads-mcp
-```
-
-Add to MCP config (e.g., `~/.config/claude/config.json`):
-```json
-{
-  "beads": {
-    "command": "beads-mcp",
-    "args": []
-  }
-}
-```
-
-Then use `mcp__beads__*` functions instead of CLI commands.
+**Always call `bd` via command line** (e.g., `bd ready`, `bd create ...`). Do not use MCP tools for beads — the CLI provides the most reliable and consistent interface.
 
 ### Managing AI-Generated Planning Documents
 

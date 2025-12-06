@@ -9,7 +9,8 @@ This project uses **bd (beads)** for issue tracking. We dogfood our own tool for
 - Auto-sync with Git via JSONL
 - AI-optimized CLI with JSON output
 - Built-in daemon for background operations
-- MCP server integration for Claude and other AI assistants
+
+**Important:** Always call `bd` via command line, not via MCP tools.
 
 ## Issue Tracking with bd
 
