@@ -1,6 +1,6 @@
 {
   "name": "wip",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "AI-assisted project management workflows",
   "author": {
     "name": "Klaus"
@@ -13,6 +13,10 @@
           {
             "type": "command",
             "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session_start.py"
+          },
+          {
+            "type": "prompt",
+            "prompt": "${CLAUDE_PLUGIN_ROOT}/hooks/session_greeting.md"
           }
         ]
       }
