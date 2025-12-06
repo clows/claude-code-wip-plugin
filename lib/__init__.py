@@ -13,7 +13,10 @@ from .tracker import (
     show_issue,
 )
 
+from . import knowledge
+
 __all__ = [
+    # Tracker functions
     "is_available",
     "create_issue",
     "update_status",
@@ -24,4 +27,6 @@ __all__ = [
     "get_stats",
     "list_issues",
     "show_issue",
+    # Knowledge module
+    "knowledge",
 ]
