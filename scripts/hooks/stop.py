@@ -5,10 +5,16 @@ Stop hook for WIP plugin.
 Checks workflow phase completion when Claude stops and nudges
 toward the next phase (e.g., remind to test after implementing).
 
+Also checks if knowledge base updates might be needed based on
+recent code changes.
+
 Outputs reminders as context for the user's next interaction.
 """
 
 import json
+import os
+import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Optional
@@ -100,6 +106,96 @@ def get_completion_check() -> Optional[str]:
     return None
 
 
+def check_knowledge_updates() -> Optional[str]:
+    """Check if knowledge base updates might be needed based on recent changes."""
+    # Check if knowledge base exists
+    kb_path = Path.cwd() / ".wip" / "knowledge"
+    if not kb_path.exists():
+        return None
+
+    try:
+        # Get recent changes (staged + unstaged)
+        result = subprocess.run(
+            ["git", "diff", "--name-only", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=10
+        )
+
+        if result.returncode != 0:
+            return None
+
+        changed_files = [f for f in result.stdout.strip().split("\n") if f]
+
+        if not changed_files:
+            return None
+
+        # Patterns that suggest interface/API changes worth documenting
+        significant_patterns = [
+            r"api[/\\]",
+            r"interface",
+            r"schema",
+            r"config",
+            r"types?\.(ts|py|go)",
+            r"__init__\.py",
+            r"index\.(ts|js)",
+            r"public[/\\]",
+            r"exports?",
+        ]
+
+        significant_changes = []
+        for f in changed_files:
+            for pattern in significant_patterns:
+                if re.search(pattern, f, re.IGNORECASE):
+                    significant_changes.append(f)
+                    break
+
+        if not significant_changes:
+            return None
+
+        # Check if any knowledge entries might be stale
+        # Compare file modification times
+        topics_path = kb_path / "topics"
+        if topics_path.exists():
+            kb_files = list(topics_path.glob("*.md"))
+            if kb_files:
+                oldest_kb_mtime = min(f.stat().st_mtime for f in kb_files)
+
+                # Check if changed files are newer than oldest KB entry
+                stale_entries = []
+                for f in significant_changes[:5]:  # Limit to first 5
+                    file_path = Path.cwd() / f
+                    if file_path.exists():
+                        if file_path.stat().st_mtime > oldest_kb_mtime:
+                            stale_entries.append(f)
+
+                if stale_entries:
+                    lines = ["## Knowledge Base Reminder"]
+                    lines.append("")
+                    lines.append("Recent changes may warrant knowledge base updates:")
+                    for f in stale_entries[:3]:
+                        lines.append(f"  - {f}")
+                    lines.append("")
+                    lines.append("Consider updating `.wip/knowledge/` entries if interfaces changed.")
+                    return "\n".join(lines)
+
+        # If we have significant changes but no KB entries yet
+        if len(significant_changes) >= 2:
+            lines = ["## Knowledge Base Reminder"]
+            lines.append("")
+            lines.append("Significant files changed that may benefit from documentation:")
+            for f in significant_changes[:3]:
+                lines.append(f"  - {f}")
+            lines.append("")
+            lines.append("Consider adding entries to `.wip/knowledge/` for key interfaces.")
+            return "\n".join(lines)
+
+    except Exception:
+        pass
+
+    return None
+
+
 def main():
     # Read hook input
     try:
@@ -112,6 +208,14 @@ def main():
 
     if reminder:
         print(reminder)
+
+    # Check for knowledge base update suggestions
+    kb_reminder = check_knowledge_updates()
+
+    if kb_reminder:
+        if reminder:
+            print("")  # Separator
+        print(kb_reminder)
 
     # Exit 0 for success (non-blocking)
     sys.exit(0)
