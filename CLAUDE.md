@@ -37,11 +37,6 @@ claude-code-wip-plugin/                   # Repository root
 
 ## Development Commands
 
-### Testing Python code
-```bash
-python -m pytest lib/
-```
-
 ### Installing the plugin
 
 Via marketplace:
@@ -117,5 +112,4 @@ Skills are **model-invoked** — Claude autonomously decides when to use them ba
 ## Python Guidelines
 
 - Use type hints
-- Tests go in `lib/tests/`
 - The `lib/tracker.py` module wraps beads integration
