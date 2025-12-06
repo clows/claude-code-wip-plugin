@@ -12,7 +12,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 $CLAUDE_PROJECT_DIR/scripts/hooks/session_start.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/hooks/session_start.py"
           }
         ]
       }
@@ -23,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 $CLAUDE_PROJECT_DIR/scripts/hooks/stop.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/hooks/stop.py"
           }
         ]
       }
@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 $CLAUDE_PROJECT_DIR/scripts/hooks/subagent_stop.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/hooks/subagent_stop.py"
           }
         ]
       }
