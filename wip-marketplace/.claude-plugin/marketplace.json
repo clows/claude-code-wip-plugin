@@ -1,0 +1,11 @@
+{
+  "name": "wip-dev",
+  "owner": { "name": "Klaus" },
+  "plugins": [
+    {
+      "name": "wip",
+      "source": "../work_in_project",
+      "description": "Work In Project plugin"
+    }
+  ]
+}
